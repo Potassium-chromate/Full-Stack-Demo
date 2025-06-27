@@ -21,11 +21,13 @@ public class BackendAPI {
     public String hello() {
         return "Hey, Spring Boot Hello World!";
     }
+    
 
-    @GetMapping("/Test")
+    @GetMapping("/test_SQL")
     public String SQL_Test() {
         String query = "SELECT * FROM Course";
 
+        
         // Query the database and get results as a list of maps
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(query);
 
@@ -46,5 +48,30 @@ public class BackendAPI {
         }
 
         return result.toString();
+        
+    }
+    
+}
+
+class LoginRequest {
+    private String username;
+    private String password;
+
+    // Getters and setters
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
