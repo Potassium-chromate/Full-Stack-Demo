@@ -1,0 +1,56 @@
+.signin_page{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 50vh; 
+    width: 25vw;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9); 
+    border-radius: 3px;
+    color: black;
+}
+
+.signin_content {
+    display: grid; /* Use grid layout */
+    grid-template-rows: 1fr 0.3fr 1fr 0.3fr 1fr 0.7fr 0.7fr; /* 7 equal rows */
+    height: 90%;
+    width: 90%;
+}
+
+
+.signin_content button {
+    width: 100%; /* Make all inputs and buttons span the full width */
+    font-size: larger;
+    border-radius: 8px;
+    background-color: rgb(235, 80, 126);
+    color: white;
+    border-color: rgba(255, 255, 255, 1);
+    height: 80%;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+.signin_content button:hover {
+    background-color: rgb(176, 48, 96);
+}
+
+.signin_content label{
+    width: 100%;
+    font-size: 16px;
+    padding: 0;
+}
+
+.signin_content input {
+    width: 100%; /* Ensure it spans the full width of the container */
+    margin-bottom: 9%;
+    border: 2px solid #ccc; /* Border color and width */
+    border-radius: 8px; /* Round the corners */
+    font-size: larger; /* Adjust font size */
+    background-color: #f9f9f9; /* Light background color */
+    color: #333; /* Text color */
+    box-sizing: border-box; /* Ensures padding doesn't increase input size */
+    transition: border-color 0.3s ease; /* Smooth transition for border color on focus */
+}
