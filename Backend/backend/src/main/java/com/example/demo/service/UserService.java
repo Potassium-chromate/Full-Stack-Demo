@@ -7,9 +7,14 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import com.example.demo.model.UserEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 @Service
 public class UserService {
+	
+	@Autowired
+    private PasswordEncoder passwordEncoder;  // Inject PasswordEncoder
+	
     private final JdbcTemplate jdbcTemplate;
 
     // Inject JdbcTemplate via constructor
@@ -46,10 +51,11 @@ public class UserService {
     		return false;
     	}
     	
+    	String hashedPassword = passwordEncoder.encode(userEntity.getPassword()); 
     	query = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
     	jdbcTemplate.update(query, 
     						userEntity.getUsername(),
-    						userEntity.getPassword(),
+    						hashedPassword,
     						userEntity.getRole());
     	return true;
     }

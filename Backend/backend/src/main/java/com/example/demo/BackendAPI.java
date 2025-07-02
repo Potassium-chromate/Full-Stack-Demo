@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.demo.service.UserService;
 import com.example.demo.model.UserEntity;
@@ -25,7 +25,8 @@ public class BackendAPI {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private UserService userService;
-    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     
     @GetMapping("/")
     public String hello() {
@@ -47,7 +48,7 @@ public class BackendAPI {
             } 
             
             // Handle incorrect password case (return 401 Unauthorized)
-            else if (!user.getPassword().equals(userEntity.getPassword())) {
+            if (!passwordEncoder.matches(userEntity.getPassword(), user.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("The password is incorrect!");
             }
 
