@@ -2,9 +2,8 @@ import { useState } from 'react'
 import axios from "axios";
 import "./CSS/SignIn_page.css"
 
-function SignIn_Page() {
+function SignIn_Page({setIfLogIn}) {
   const [identiftInfo, setIdentiftInfo] = useState({"account": "", "password": ""});
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
 
   const handleInputChange =(e) => {
     const {name, value} = e.target
@@ -16,13 +15,15 @@ function SignIn_Page() {
 
   const handleLogin =() => {
     console.info(identiftInfo)
-     axios.post("http://127.0.0.1:8080/login", {
+     axios.post("http://localhost:8080/login", {
             username: identiftInfo.account,
             password: identiftInfo.password
-        })
+        },
+        {withCredentials: true})
         .then(response => {
             console.log("Log in successfully");
             alert("Log in successfully");
+            setIfLogIn(true);
             return true;
         })
         .catch(error => {
@@ -35,7 +36,7 @@ function SignIn_Page() {
 
   const handleSignUp =() => {
     console.info(identiftInfo)
-     axios.post("http://127.0.0.1:8080/signup", {
+     axios.post("http://localhost:8080/signup", {
             username: identiftInfo.account,
             password: identiftInfo.password,
             role: "USER"
