@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,21 +9,24 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.access.prepost.PreAuthorize;
+import javax.servlet.http.HttpSession;
 
 import com.example.demo.service.UserService;
+import com.example.demo.service.CourseService;
+import com.example.demo.model.CourseEntity;
 import com.example.demo.model.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Map;
-
+import java.util.Arrays;
 @RestController
 public class BackendAPI {
-	
-	@Autowired
-    private JdbcTemplate jdbcTemplate;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CourseService courseService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     
@@ -33,11 +35,9 @@ public class BackendAPI {
         return "Hey, Spring Boot Hello World!";
     }
     
-    
-
     // Custom login API
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserEntity userEntity) {
+    public ResponseEntity<String> login(@RequestBody UserEntity userEntity, HttpSession session) {
         try {
             // Find user by username
             UserEntity user = userService.findUserByUsername(userEntity.getUsername());
@@ -51,12 +51,17 @@ public class BackendAPI {
             if (!passwordEncoder.matches(userEntity.getPassword(), user.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("The password is incorrect!");
             }
-
+            // Create authority (role) for the user based on their role
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + user.getRole());
             // If authentication is successful, create authentication token and set security context
             UsernamePasswordAuthenticationToken authenticationToken = 
-                new UsernamePasswordAuthenticationToken(userEntity.getUsername(), userEntity.getPassword());
+                new UsernamePasswordAuthenticationToken(userEntity.getUsername(), userEntity.getPassword(),  Arrays.asList(authority));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
+            System.out.println("Name: " + SecurityContextHolder.getContext().getAuthentication().getName());
+            System.out.println("Auth: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+            String sessionId = session.getId(); // Get the session ID
+            System.out.println("Session ID: " + sessionId); // Print the session ID to the console
+            
             // Return 200 OK if login is successful
             return ResponseEntity.status(HttpStatus.OK).body("Login successful");
 
@@ -82,33 +87,12 @@ public class BackendAPI {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing your request.");
         }
     }
-
+    
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     @GetMapping("/test_SQL")
-    public String SQL_Test() {
-        String query = "SELECT * FROM Course";
-
-        
-        // Query the database and get results as a list of maps
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList(query);
-
-        StringBuilder result = new StringBuilder();
-        if (rows.isEmpty()) {
-            result.append("No data found.");
-        } else {
-            for (Map<String, Object> row : rows) {
-                String courseID = (String) row.get("c_id");
-                String courseName = (String) row.get("c_name");
-                String studentID = (String) row.get("t_id");
-
-                result.append("courseID: ").append(courseID)
-                      .append(", courseName: ").append(courseName)
-                      .append(", studentID: ").append(studentID)
-                      .append("<br>");
-            }
-        }
-
-        return result.toString();
-        
+    public ResponseEntity<List<CourseEntity>> SQL_Test() {
+    	List<CourseEntity> courses = courseService.getCourseTable();
+    	return ResponseEntity.status(HttpStatus.OK).body(courses);
     }
     
 }

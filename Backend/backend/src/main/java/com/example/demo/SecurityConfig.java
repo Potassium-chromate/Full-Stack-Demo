@@ -2,6 +2,7 @@ package com.example.demo;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,13 +17,16 @@ import org.springframework.security.core.userdetails.User;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled  = true)
 public class SecurityConfig implements WebMvcConfigurer{
 
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // Disable CSRF for API if not using session-based authentication
+            
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+            	//.antMatchers("/user/**").hasRole("USER")
                 .antMatchers("/login", "/signup").permitAll() // Allow access to your custom login API
                 .anyRequest().authenticated() // All other requests require authentication
             )
@@ -51,7 +55,7 @@ public class SecurityConfig implements WebMvcConfigurer{
     public void addCorsMappings(CorsRegistry registry) {
         // Allow CORS from your React frontend
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173")  // Adjust to your React app URL
+                .allowedOrigins("http://localhost:5173", "http://127.0.0.1:5173")  // Adjust to your React app URL
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true);  // Allow cookies if needed
