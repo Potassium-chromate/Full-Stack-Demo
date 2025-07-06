@@ -14,13 +14,8 @@ public class UserService {
 	
 	@Autowired
     private PasswordEncoder passwordEncoder;  // Inject PasswordEncoder
-	
-    private final JdbcTemplate jdbcTemplate;
-
-    // Inject JdbcTemplate via constructor
-    public UserService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+	@Autowired
+    private JdbcTemplate jdbcTemplate;
 
     public UserEntity findUserByUsername(String username) {
         String query = "SELECT id, username, password, role FROM users WHERE username = ?";
