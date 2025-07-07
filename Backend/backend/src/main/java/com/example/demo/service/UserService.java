@@ -1,57 +1,52 @@
 package com.example.demo.service;
 
-import java.util.List;
-import java.util.Map;
-
-
-import org.springframework.stereotype.Service;
-import com.example.demo.model.UserEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import com.example.demo.model.UserEntity;
+import com.example.demo.repository.UserRepository;
+
+import java.util.List;
+
 @Service
 public class UserService {
-	
-	@Autowired
+
+    @Autowired
     private PasswordEncoder passwordEncoder;  // Inject PasswordEncoder
-	@Autowired
-    private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    // Find a user by username
     public UserEntity findUserByUsername(String username) {
-        String query = "SELECT id, username, password, role FROM users WHERE username = ?";
-        UserEntity return_entity = null;
+        // Call the repository method to find user by username
+    	System.out.println(username);
+        List<UserEntity> users = userRepository.findUserByUsername(username);
         
-        // Query the database and get results as a list of maps
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList(query, username);
-
-        if (!rows.isEmpty()) {
-            Map<String, Object> row = rows.get(0); // Get the first row
-            return_entity = new UserEntity();
-            
-            // Populate the UserEntity object with the data from the database
-            return_entity.setId((Long) row.get("id"));  // Cast to Long
-            return_entity.setUsername((String) row.get("username")); // Cast to String
-            return_entity.setPassword((String) row.get("password")); // Cast to String
-            return_entity.setRole((String) row.get("role")); // Cast to String
+        // If a user is found, return the first match (assuming usernames are unique)
+        if (!users.isEmpty()) {
+            return users.get(0); // Return the first match
         }
-        return return_entity;
+        
+        // If no user found, return null or handle it accordingly
+        return null;
     }
-    
+
+    // Save a new user to the database
     public boolean saveUser(UserEntity userEntity) {
-    	//Query if the account is already existed
-    	String query = "SELECT id, username, password, role FROM users WHERE username = ?";
-    	List<Map<String, Object>> rows = jdbcTemplate.queryForList(query, userEntity.getUsername());
-    	if (!rows.isEmpty()) {
-    		System.out.println("Account" + userEntity.getUsername() + "is already existed.");
-    		return false;
-    	}
-    	
-    	String hashedPassword = passwordEncoder.encode(userEntity.getPassword()); 
-    	query = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
-    	jdbcTemplate.update(query, 
-    						userEntity.getUsername(),
-    						hashedPassword,
-    						userEntity.getRole());
-    	return true;
+        // Check if the user already exists by username
+        UserEntity existingUser = findUserByUsername(userEntity.getUsername());
+        if (existingUser != null) {
+            System.out.println("Account with username " + userEntity.getUsername() + " already exists.");
+            return false;  // Return false if user exists
+        }
+
+        // Encode the password before saving the user
+        String hashedPassword = passwordEncoder.encode(userEntity.getPassword());
+        userEntity.setPassword(hashedPassword);  // Set the encoded password
+
+        // Save the new user to the database
+        userRepository.save(userEntity);
+        return true;  // Return true if the user is saved successfully
     }
 }

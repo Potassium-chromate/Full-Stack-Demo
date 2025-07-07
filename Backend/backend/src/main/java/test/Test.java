@@ -22,19 +22,21 @@ public class Test {
     private static final String JDBC_PASSWORD = "password=Eason901215";
     
 	public static void main(String[] args) {
+		/*
 		Test test = new Test();
 		
 		UserEntity inputEntity = new UserEntity();
-		inputEntity.setUsername("Eason");
+		inputEntity.setUserName("Eason");
 		inputEntity.setPassword("Eason901215");
 		inputEntity.setRole("admin");
 		
-		UserEntity outputEntity = test.findUserByUsername(inputEntity.getUsername());
+		UserEntity outputEntity = test.findUserByUsername(inputEntity.getUserName());
 		if (outputEntity != null) {
 			System.out.println("Query Successfully!");
 		}else {
-			System.out.println("Account:" + inputEntity.getUsername()+" is not founded!");
+			System.out.println("Account:" + inputEntity.getUserName()+" is not founded!");
 		}
+		*/
 	}
     
 	public UserEntity findUserByUsername(String username) {

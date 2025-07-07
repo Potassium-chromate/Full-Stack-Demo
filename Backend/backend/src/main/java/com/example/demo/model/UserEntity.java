@@ -2,16 +2,22 @@ package com.example.demo.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
 import java.util.Map;
 import java.util.HashMap;
 
 @Entity
+@Table(name = "users")
 public class UserEntity {
 
     @Id
     private Long id;
+    @Column(name = "username")
     private String username;
+    @Column(name = "password")
     private String password;
+    @Column(name = "role")
     private String role;
 
     // Default constructor
