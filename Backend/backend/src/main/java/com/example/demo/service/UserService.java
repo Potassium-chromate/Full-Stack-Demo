@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.demo.model.UserEntity;
@@ -11,11 +10,13 @@ import java.util.List;
 @Service
 public class UserService {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;  // Inject PasswordEncoder
-
-    @Autowired
-    private UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+    private final UserRepository  userRepository;
+    public UserService(PasswordEncoder passwordEncoder,
+		               UserRepository  userRepository) {
+		this.passwordEncoder = passwordEncoder;
+		this.userRepository  = userRepository;
+    }
 
     // Find a user by username
     public UserEntity findUserByUsername(String username) {
