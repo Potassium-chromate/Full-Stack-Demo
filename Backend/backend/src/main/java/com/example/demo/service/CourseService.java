@@ -6,13 +6,14 @@ import com.example.demo.repository.CourseRepository;
 import com.example.demo.model.CourseEntity;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CourseService {
 
     private final CourseRepository courseRepository;
     public CourseService (CourseRepository courseRepository) {
-    	this.courseRepository = courseRepository;
+    	this.courseRepository = Objects.requireNonNull(courseRepository);
     }
 	
 	public List<CourseEntity> getCourseTable() {

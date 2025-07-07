@@ -6,7 +6,7 @@ import com.example.demo.model.UserEntity;
 import com.example.demo.repository.UserRepository;
 
 import java.util.List;
-
+import java.util.Objects;
 @Service
 public class UserService {
 
@@ -14,8 +14,8 @@ public class UserService {
     private final UserRepository  userRepository;
     public UserService(PasswordEncoder passwordEncoder,
 		               UserRepository  userRepository) {
-		this.passwordEncoder = passwordEncoder;
-		this.userRepository  = userRepository;
+		this.passwordEncoder = Objects.requireNonNull(passwordEncoder);
+		this.userRepository  = Objects.requireNonNull(userRepository);
     }
 
     // Find a user by username
